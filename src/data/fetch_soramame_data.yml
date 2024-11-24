@@ -1,8 +1,8 @@
 # 取得するデータの開始年月(yyyymm)
-start_ym: '202312'
+start_ym: '202410'
 
 # 取得するデータの終了年月(yyyymm)
-end_ym: '202401'
+end_ym: '202411'
 
 # 取得するデータの測定局コード
 prefecture_code: '14'

@@ -36,12 +36,34 @@ def process_data():
     # SKT_DATEとSKT_TIMEを組み合わせて新しい日時列を作成
     combined_df['DATETIME'] = pd.to_datetime(combined_df['SKT_DATE'].dt.strftime('%Y-%m-%d') + ' ' + combined_df['SKT_TIME'])
 
+    # 環境データのカラムを定義
+    numerical_cols = [
+        'SO2', 'NO', 'NO2', 'NOX', 'CO', 'OX',
+        'NMHC', 'CH4', 'THC', 'SPM', 'SP', 
+        'WS', 'TEMP', 'HUM', 'PM2_5'
+    ]
+    categorical_cols = ['WD']  # 風向のカラム
+
+    # 数値データの処理
+    for col in numerical_cols:
+        combined_df[col] = pd.to_numeric(
+            combined_df[col].replace(['-', ''], np.nan), errors='coerce'
+        )
+
+    # カテゴリカルデータの処理
+    for col in categorical_cols:
+        combined_df[col] = combined_df[col].replace(['-', ''], np.nan)
+
     # 重複する日時のデータを削除（最新のデータを保持）
-    combined_df = combined_df.sort_values('DATETIME').drop_duplicates(subset='DATETIME', keep='last')
+    combined_df = (
+        combined_df
+        .sort_values('DATETIME')
+        .drop_duplicates(subset='DATETIME', keep='last')
+    )
     
     # 日時でソート
     combined_df = combined_df.sort_values('DATETIME')
-    
+
     # DATETIME列を行の先頭に移動(系列識別子)し、SKT_CDをdrop、targetカラムのPM2_5を一番右端へ
     combined_df = combined_df.reindex(
         columns=[
